@@ -1,0 +1,15 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/tmp/
+erl_crash.dump
+*.ez
+looot-*.tar
+.elixir_ls/
+.env
+.env.*
+!.env.example
+.DS_Store
+.hex/
+.mix/

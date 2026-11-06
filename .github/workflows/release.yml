@@ -1,0 +1,35 @@
+# Runs when a v* tag is pushed. Hex has no OIDC trusted publishing, so the job uses the
+# HEX_API_KEY secret of the `hex` environment. See PUBLISH.md.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    environment: hex
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: erlef/setup-beam@v1.18.2
+        with:
+          elixir-version: "1.18.4"
+          otp-version: "27"
+      - name: Version in mix.exs matches the tag
+        run: |
+          want="${GITHUB_REF_NAME#v}"
+          grep -q "@version \"$want\"" mix.exs || { echo "mix.exs @version is not $want"; exit 1; }
+      - run: mix deps.get
+      - run: mix test
+      - name: Publish to Hex (package and docs)
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+        run: mix hex.publish --yes
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "See CHANGELOG.md." --verify-tag
