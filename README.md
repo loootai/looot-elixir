@@ -89,7 +89,7 @@ timeout (`status: 0`).
 case Looot.run_job(client, "people.email.find", input) do
   {:ok, run} -> run
   {:error, %Looot.Error{code: "insufficient_balance"} = e} ->
-    IO.puts("Add credit: " <> Looot.Error.top_up_url(e)) # then run again with a new key
+    IO.puts("Add credit: #{Looot.Error.top_up_url(e)}") # then run again with a new key
   {:error, %Looot.Error{retryable: true} = e} ->
     IO.puts("Try later, same key: #{e.retry_after_seconds}")
   {:error, %Looot.Error{} = e} ->

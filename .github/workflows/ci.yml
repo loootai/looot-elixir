@@ -30,6 +30,9 @@ jobs:
       - run: mix format --check-formatted
       - run: mix compile --warnings-as-errors
       - run: mix test
+      - name: Build the docs
+        if: matrix.elixir == '1.18.4'
+        run: MIX_ENV=dev mix docs --warnings-as-errors
       - name: Build the Hex package
         if: matrix.elixir == '1.18.4'
         run: mix hex.build
